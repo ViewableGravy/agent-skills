@@ -1,48 +1,62 @@
 ---
-name: css_naming-conventions
-description: Guidelines for naming CSS classnames using BEM methodology in React components.
+name: css_classname-naming
+description: Guidelines for naming CSS classnames using CSS Modules in React components.
 ---
 
-# CSS Classname Naming
+# CSS Classname Naming (CSS Modules)
 
 ## Purpose
 
-To ensure consistent, predictable, and maintainable CSS classnames across the codebase using the BEM (Block Element Modifier) methodology.
+To ensure consistent, predictable, and maintainable CSS classnames across the codebase using CSS Modules. Since CSS Modules automatically scope styles locally, we avoid complex naming conventions like BEM in favor of simple, descriptive camelCase names.
 
 ## When to use
 
 - When creating new React components that require styling.
-- When refactoring existing components to use standard CSS classnames.
+- When refactoring existing components with classnames.
 - When adding conditional styles or modifiers to elements.
 
 ## Behavior
 
-1. **Use BEM naming**: Follow the `Block__Element--Modifier` pattern (e.g., `MyComponent__component--modifier`).
-2. **Capitalize the classname**: The block name should match the React component name exactly (e.g., `MyComponent`).
-3. **Match the React component name**: When defining a class for the root element of a component, use the component's name.
-4. **Use nested CSS**: Build classnames using nested CSS (e.g., `&__element` and `&--modifier`).
-5. **Modifiers are for conditionals**: Only use modifiers for boolean or conditional classnames.
-6. **Root element naming**: Only the outermost React element should use the block name directly (`MyComponent`). All nested elements should use a sub-name (`MyComponent__element`) or a modifier.
-7. **Avoid targeting children**: Do not target children classnames directly in CSS. Prefer passing a `className` prop to the child component.
-8. **Use `classNames` utility**: Use the `classNames` utility function for composing conditional classnames in React. If the `classNames` call must be formatted over multiple lines (e.g., due to line length or containing an object for conditional classes), assign it to a variable before the JSX return statement to prevent conflating the markup.
+1. **Use camelCase**: Always prefer `camelCase` for class names so they can be accessed via dot notation (e.g., `styles.myClass`). Do not use kebab-case (e.g., `my-class`).
+2. **No BEM required**: Because CSS modules provide isolation, BEM naming (`__` and `--`) is unnecessary. Use simple, descriptive names (e.g., `header`, `submitButton`).
+3. **Root element naming**: The root element of a component should match the component's name but in `camelCase` (e.g., `myComponent` for `<MyComponent />`), or simply use `root`.
+4. **Modifiers are for conditionals**: Use descriptive camelCase names for conditional states (e.g., `isActive`, `isDisabled`, `hasError`). Apply them alongside the base class.
+5. **Avoid targeting children**: Do not target children classnames directly in CSS. Prefer passing a `className` prop to the child component.
+6. **Use `classNames` for all conditional classnames**: Compose conditional classnames with the `classNames` utility. Do not use array joins or string interpolation for conditional class logic.
+7. **Keep `className` expressions simple and explicit**: A `className` should be either a string literal for static classes or a `classNames(...)` expression for any dynamic/conditional case.
+8. **Refactor on touch**: When modifying a component for any reason, normalize existing classname composition to these rules instead of preserving non-standard patterns.
+9. **Improve readability when multiline**: If a `classNames` call spans multiple lines (e.g., long arguments or conditional object syntax), assign it to a variable before `return` to keep JSX readable.
 
 ## Example
 
 ```tsx
 import classNames from 'classnames';
-import styles from './MyComponent.module.scss';
+import styles from './MyComponent.module.css';
 
 export function MyComponent({ isActive, className }) {
-  const headerClassName = classNames(styles.MyComponent__header, {
-    [styles['MyComponent__header--active']]: isActive
+  const headerClassName = classNames(styles.header, {
+    [styles.headerActive]: isActive
   });
 
   return (
-    <div className={classNames(styles.MyComponent, className)}>
+    <div className={classNames(styles.myComponent, className)}>
       <div className={headerClassName}>
         Header
       </div>
     </div>
   );
+}
+```
+```css
+.myComponent {
+  /* styles */
+}
+
+.header {
+  /* styles */
+}
+
+.headerActive {
+  /* styles */
 }
 ```
